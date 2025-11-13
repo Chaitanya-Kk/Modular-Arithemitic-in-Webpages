@@ -1,3 +1,4 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # Modular Arithmetic in Computing  
 **A Beautifully Designed 2-Page Educational Website**
 
