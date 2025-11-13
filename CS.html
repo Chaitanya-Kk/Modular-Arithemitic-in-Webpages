@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Number Theory & Modular Arithmetic Support Computer Systems, ML, and Emerging Technologies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #1d1d1f;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 113, 227, 0.15) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+
+        h1 {
+            font-size: clamp(2.05rem, 4vw, 6rem);
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -0.03em;
+            background: linear-gradient(90deg, #fff, #a1a1a6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease 0.2s backwards;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 900px;
+            margin: 0 auto 60px;
+            animation: fadeInUp 1s ease 0.4s backwards;
+            position: relative;
+            z-index: 1;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            animation: bounce 2s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .section {
+            padding: 120px 0;
+            position: relative;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 48px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: cardFadeIn 0.8s ease forwards;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.15s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.25s; }
+        .card:nth-child(5) { animation-delay: 0.3s; }
+        .card:nth-child(6) { animation-delay: 0.35s; }
+        .card:nth-child(7) { animation-delay: 0.4s; }
+        .card:nth-child(8) { animation-delay: 0.45s; }
+        .card:nth-child(9) { animation-delay: 0.5s; }
+        .card:nth-child(10) { animation-delay: 0.55s; }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent), #0077ed);
+            border-radius: 12px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            font-size: 1.2rem;
+        }
+
+        .card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .use-case {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(0, 113, 227, 0.15);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            color: var(--accent);
+            font-weight: 500;
+            border: 1px solid rgba(0, 113, 227, 0.3);
+        }
+
+        .description {
+            margin-top: 24px;
+        }
+
+        .description p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .arrow {
+            color: var(--accent);
+            margin-right: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tag-cs {
+            background: rgba(0, 113, 227, 0.2);
+            color: var(--accent);
+            border: 1px solid rgba(0, 113, 227, 0.4);
+        }
+
+        .tag-ml {
+            background: rgba(100, 200, 255, 0.15);
+            color: #64c8ff;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .summary-section {
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.05), rgba(0, 119, 237, 0.02));
+            border-radius: 32px;
+            padding: 80px 60px;
+            margin: 120px 0;
+            border: 1px solid rgba(0, 113, 227, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 113, 227, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .summary-section h2 {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 60px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 24px 32px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(0, 113, 227, 0.15);
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            border-bottom: 2px solid rgba(0, 113, 227, 0.3);
+        }
+
+        td {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr {
+            transition: background 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .bottom-line {
+            text-align: center;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            padding: 80px 60px;
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.1), rgba(0, 119, 237, 0.05));
+            border-radius: 32px;
+            margin: 80px 0 120px;
+            border: 1px solid rgba(0, 113, 227, 0.2);
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        .bottom-line strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .redirect-section {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, rgba(0, 113, 227, 0.08), rgba(0, 113, 227, 0.04));
+            border-radius: 32px;
+            margin: 80px 0 120px;
+            border: 1px solid rgba(0, 113, 227, 0.25);
+            font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+            line-height: 1.7;
+        }
+
+        .redirect-section a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .redirect-section a:hover {
+            border-bottom-color: var(--accent);
+            color: #fff;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                padding: 0 24px;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .card {
+                padding: 36px;
+            }
+            .section {
+                padding: 80px 0;
+            }
+            .summary-section, .bottom-line, .redirect-section {
+                padding: 48px 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                min-height: 80vh;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            th, td {
+                padding: 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .floating-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-bg span {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(0, 113, 227, 0.3), transparent);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .floating-bg span:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 20s;
+        }
+
+        .floating-bg span:nth-child(2) {
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+            animation-duration: 18s;
+        }
+
+        .floating-bg span:nth-child(3) {
+            top: 40%;
+            left: 20%;
+            animation-delay: 4s;
+            animation-duration: 22s;
+        }
+
+        .floating-bg span:nth-child(4) {
+            top: 80%;
+            left: 60%;
+            animation-delay: 6s;
+            animation-duration: 16s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translate(50px, -50px) scale(1.2);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(-30px, -80px) scale(0.8);
+                opacity: 0.3;
+            }
+            75% {
+                transform: translate(70px, 30px) scale(1.1);
+                opacity: 0.4;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-bg">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <section class="hero">
+        <h1>How Number Theory & Modular Arithmetic<br>Support Computer Systems, ML, and Emerging Technologies</h1>
+        <p class="hero-subtitle">Below, you’ll see how the number theory topics from your syllabus are crucial in both traditional computer systems and are becoming influential in modern fields like machine learning (ML), blockchain, and beyond.</p>
+        <div class="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="section">
+            <div class="cards-grid">
+                <!-- Card 1 -->
+                <div class="card">
+                    <span class="card-number">1</span>
+                    <h2>Divisibility & Modular Arithmetic</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Hash tables, consistent hashing: Key to fast data retrieval, database sharding, and load balancing (Google/Bing search, distributed file systems).</p>
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Cyclic buffers/circular queues: Manage streaming data efficiently—in network switches, audio processing, and robotics.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Feature encoding: Modulo can bucket features (e.g., mapping IDs or times to categories).</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Randomization seeds: Ensures reproducibility and even data splits via modular math.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card">
+                    <span class="card-number">2</span>
+                    <h2>Division Algorithm</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Memory mapping, pagination: Computer memory and cache lines use quotient/remainder logic for fast lookup.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Data sharding: ML frameworks divide data into batches using division algorithms for parallel model training.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Scheduling jobs: Distributes learning tasks across GPUs or servers.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card">
+                    <span class="card-number">3</span>
+                    <h2>Prime Numbers</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Cryptography: Basis for secure HTTPS, VPNs, digital cash.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Random initialization: Primes reduce cycle lengths and bias in pseudo-random number generators; helps prevent pattern artifacts when initializing neural networks.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Hashing with primes: Prevents clustering/collision in feature hashing (used in large-scale text processing).</p>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card">
+                    <span class="card-number">4</span>
+                    <h2>GCD & Euclid’s Algorithm</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Image scaling, aspect ratios: GCD simplifies graphics / user interface design for any aspect ratio.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Period finding/alignment: Used in signal processing and pattern mining for ML (pattern cycles alignment).</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Distributed consensus/time synchronization: GCD helps align clock intervals in distributed ML training.</p>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="card">
+                    <span class="card-number">5</span>
+                    <h2>Extended Euclid’s Algorithm & Modular Inverse</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Secure communications: Encrypt/decrypt with modular inverse key calculations (RSA, ECC, digital signatures).</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Homomorphic encryption: Lets ML operate on encrypted data—privacy-preserving decentralized ML, such as federated learning, uses modular inverse calculations for secure aggregation.</p>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="card">
+                    <span class="card-number">6</span>
+                    <h2>Fundamental Theorem of Arithmetic</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Ensures uniqueness of cryptographic keys, factorizations in security protocols.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Random walk uniqueness and complexity analysis: Some ML algorithms rely on prime factorizations for theoretical guarantees in combinatorics and number-based feature creation.</p>
+                    </div>
+                </div>
+
+                <!-- Card 7 -->
+                <div class="card">
+                    <span class="card-number">7</span>
+                    <h2>Congruences</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Hashing and checksums: Verifies file integrity and manages memory locations.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Feature engineering: Used to bucketize, hash, or encode high-cardinality features in tabular data.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Reservoir sampling and modular counters: Efficiently tracks statistics or events over streaming data.</p>
+                    </div>
+                </div>
+
+                <!-- Card 8 -->
+                <div class="card">
+                    <span class="card-number">8</span>
+                    <h2>Fermat’s Little Theorem</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Fast primality testing for secure key generation.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Homomorphic encryption and crypto-ML: Secure multiparty computations (training on private data) exploit fast exponentiation made possible by Fermat’s theorem.</p>
+                    </div>
+                </div>
+
+                <!-- Card 9 -->
+                <div class="card">
+                    <span class="card-number">9</span>
+                    <h2>Euler’s Phi Function</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Key generation and period calculations for secure communications.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Designing cryptographically secure random seeds for randomized algorithms and secure federated learning.</p>
+                    </div>
+                </div>
+
+                <!-- Card 10 -->
+                <div class="card">
+                    <span class="card-number">10</span>
+                    <h2>Chinese Remainder Theorem (CRT)</h2>
+                    <div class="use-case">
+                        <span class="tag tag-cs">Computer Systems</span>
+                        <span class="tag tag-ml">ML / Tech</span>
+                    </div>
+                    <div class="description">
+                        <p><span class="arrow">→</span> <strong>CS:</strong> Optimizing large-integer calculations in RSA, digital signatures, and database partitioning.</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Federated analytics: Lets distributed ML nodes combine learned parameters efficiently (used in privacy-preserving data fusion).</p>
+                        <p><span class="arrow">→</span> <strong>ML:</strong> Parallelization: CRT-based sharding for splitting massive ML tasks across processors or GPUs without conflicts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="summary-section">
+            <h2>At a Glance</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concept</th>
+                            <th>Classic Computer Use</th>
+                            <th>ML & Emerging Tech Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Modular arithmetic</td>
+                            <td>Hashing, cyclic buffers</td>
+                            <td>Feature encoding, reproducible splits</td>
+                        </tr>
+                        <tr>
+                            <td>Division algo</td>
+                            <td>Memory pages, load balancing</td>
+                            <td>Data batch division, ML scheduling</td>
+                        </tr>
+                        <tr>
+                            <td>Primes</td>
+                            <td>Cryptography</td>
+                            <td>Secure randomness, feature hashing</td>
+                        </tr>
+                        <tr>
+                            <td>GCD/Euclid</td>
+                            <td>Aspect ratios, graphics</td>
+                            <td>Signal alignment, distributed timing</td>
+                        </tr>
+                        <tr>
+                            <td>Modular inverse</td>
+                            <td>Key generation, digital signature</td>
+                            <td>Secure ML, homomorphic encryption</td>
+                        </tr>
+                        <tr>
+                            <td>Fundamental Thm</td>
+                            <td>Unique factorizations</td>
+                            <td>Theoretical ML feature design</td>
+                        </tr>
+                        <tr>
+                            <td>Congruence</td>
+                            <td>Checksums, memory hashing</td>
+                            <td>Feature bucketing, streaming counters</td>
+                        </tr>
+                        <tr>
+                            <td>Fermat’s Thm</td>
+                            <td>Fast crypto, primality</td>
+                            <td>Secure computation, crypto-ML</td>
+                        </tr>
+                        <tr>
+                            <td>Euler’s phi</td>
+                            <td>RSA key generation</td>
+                            <td>Secure seeds for randomized ML</td>
+                        </tr>
+                        <tr>
+                            <td>CRT</td>
+                            <td>Big-int arithmetic, DB partition</td>
+                            <td>Federated ML, distributed learning</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="bottom-line">
+            <strong>Discrete math concepts like modular arithmetic, primes, and GCDs are everywhere</strong>—helping computers run reliably and letting machine learning and upcoming privacy-focused tech (like blockchain and federated learning) scale securely and efficiently. Whether it’s fast hashing, secure encrypted computation, or breaking up big ML jobs for parallel training, these age-old tools are powering the most modern systems.
+        </div>
+
+        <!-- Optional: Add redirect back or to next page -->
+        <!--
+        <div class="redirect-section">
+            Want to explore more? <a href="index.html">← Back to Web Applications</a>
+        </div>
+        -->
+    </div>
+</body>
+</html>
