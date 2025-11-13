@@ -110,7 +110,7 @@ Perfect for:
 
 | `index.html` | `CS.html` |
 |--------------|-----------|
-| ![Web Page](https://i.imgur.com/example1.png) | ![CS/ML Page](https://i.imgur.com/example2.png) |
+| ![Web Page](https://drive.google.com/file/d/1gqCm-ZArnwwXLQwOZK4jtrnqyP91ZSIP/view?usp=sharing) | ![CS/ML Page](https://i.imgur.com/example2.png) |
 
 *(Add real screenshots later)*
 
