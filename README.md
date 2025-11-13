@@ -110,7 +110,7 @@ Perfect for:
 
 | `index.html` | `CS.html` |
 |--------------|-----------|
-| ![Web Page](https://drive.google.com/uc?export=view&id=1gqCm-ZArnwwXLQwOZK4jtrnqyP91ZSIP) | ![CS/ML Page](https://i.imgur.com/example2.png) |
+| ![Web Page](https://drive.google.com/uc?export=view&id=1IuihWyJq7KK2pNueIcqEqIUy7eF2P8p3) | ![CS/ML Page](https://drive.google.com/uc?export=view&id=1gqCm-ZArnwwXLQwOZK4jtrnqyP91ZSIP) |
 
 
 ---
